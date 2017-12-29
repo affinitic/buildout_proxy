@@ -22,6 +22,11 @@ def main(global_config, **settings):
         settings['buildout_proxy.cache']['default'] = settings.get(
             'buildout_proxy.cache.default',
         ) or 86400
+    else:
+        settings['buildout_proxy.cache'] = {}
+        settings['buildout_proxy.cache']['default'] = settings.get(
+            'buildout_proxy.cache.default',
+        ) or 86400
     config = Configurator(settings=settings)
     config.include('pyramid_jinja2')
     config.add_renderer(
