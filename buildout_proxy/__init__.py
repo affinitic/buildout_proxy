@@ -5,6 +5,7 @@ from pyramid.config import Configurator
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
+    settings['buildout_proxy.hosts.passwords'] = {}
     if 'buildout_proxy.hosts.passwords' in settings:
         with open(settings['buildout_proxy.hosts.passwords'], 'r') as f:
             settings['buildout_proxy.hosts.passwords'] = {
