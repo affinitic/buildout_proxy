@@ -95,12 +95,13 @@ def cache_file(request, url, f_path):
     content = r.content.decode('utf8')
     parser = parse(io.StringIO(content), None)
     extends = parser.get('buildout', {}).get('extends', '')
+    base_url = get_base_url(request)
     new_extends = []
     for extend in extends.splitlines():
         if not extend.startswith('http'):
             extend = urljoin(url, extend)
         get_cache_file(request, extend)
-        new_extends.append(update_url(extend))
+        new_extends.append(update_url(base_url, extend))
     if extends:
         content = smart_section_replacer(
             content,
@@ -114,11 +115,19 @@ def cache_file(request, url, f_path):
     return f_path
 
 
-def update_url(url):
+def get_base_url(request):
+    """Return the base url extracted from the given request"""
+    return '{0}://{1}'.format(
+        request.environ.get('wsgi.url_scheme'),
+        request.environ.get('HTTP_HOST'),
+    )
+
+
+def update_url(base_url, url):
     """ Update an url to use the buildout_proxy cache """
     replacements = (
-        ('http://', 'http://localhost:6543/resource/http/'),
-        ('https://', 'http://localhost:6543/resource/https/'),
+        ('http://', '{0}/resource/http/'.format(base_url)),
+        ('https://', '{0}/resource/https/'.format(base_url)),
     )
     for old, new in replacements:
         url = url.replace(old, new)
