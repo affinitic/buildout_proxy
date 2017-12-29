@@ -30,11 +30,11 @@ def main(global_config, **settings):
     )
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('home', '/')
-    config.add_route('resource', '/resource/{protocol}/{domain}/*path')
-    config.add_route('merged', '/merged/{protocol}/{domain}/*path')
+    config.add_route('resource', '/r/{protocol}/{domain}/*path')
+    config.add_route('merged', '/m/{protocol}/{domain}/*path')
     config.add_route(
         'merged_section',
-        '/merged_section/{section}/{protocol}/{domain}/*path',
+        '/ms/{section}/{protocol}/{domain}/*path',
     )
     config.scan()
     return config.make_wsgi_app()
