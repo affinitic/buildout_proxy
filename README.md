@@ -87,15 +87,15 @@ buildout_proxy.cache
 The cache duration per domain (in seconds)
 
 example :
-`
+```
 affinitic.be;ever
 *github.com;never
 google.com;3600
-`
+```
 
 allowed values :
-`
+```
 never
 ever
 integer
-`
+```
