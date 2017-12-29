@@ -7,7 +7,7 @@ RUN mkdir /buildout_proxy/config
 
 COPY setup.py /buildout_proxy
 COPY CHANGES.rst /buildout_proxy
-COPY README.rst /buildout_proxy
+COPY README.md /buildout_proxy
 COPY requirements.txt /buildout_proxy
 COPY buildout_proxy /buildout_proxy/buildout_proxy
 RUN rm -rf /buildout_proxy/buildout_proxy/tests
