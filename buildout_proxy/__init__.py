@@ -27,6 +27,13 @@ def main(global_config, **settings):
         settings['buildout_proxy.cache']['default'] = settings.get(
             'buildout_proxy.cache.default',
         ) or 86400
+    if 'buildout_proxy.allow.routes' in settings:
+        settings['buildout_proxy.allow.routes'] = [
+            e for e in settings['buildout_proxy.allow.routes'].splitlines()
+            if e
+        ]
+    else:
+        settings['buildout_proxy.allow.routes'] = ['resource']
     config = Configurator(settings=settings)
     config.include('pyramid_jinja2')
     config.add_renderer(

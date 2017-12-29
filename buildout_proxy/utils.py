@@ -2,6 +2,7 @@
 from urllib.parse import urljoin
 from urllib.parse import urlsplit
 from zc.buildout.configparser import parse
+from pyramid.httpexceptions import HTTPNotFound
 
 import hashlib
 import io
@@ -151,3 +152,10 @@ def smart_section_replacer(text, section, old_elements, new_elements):
         )
         position += len(new) - len(old)
     return text.replace(text[start:end], new_text)
+
+
+def allowed_route(request, name):
+    """ Verify if the given route name is allowed or raise an error """
+    settings = request.registry.settings
+    if name not in settings['buildout_proxy.allow.routes']:
+        raise HTTPNotFound()

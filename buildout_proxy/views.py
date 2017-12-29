@@ -15,6 +15,7 @@ def my_view(request):
 
 @view_config(route_name='resource', renderer='text')
 def resource_view(request):
+    utils.allowed_route(request, 'resource')
     url = utils.compose_url(request)
     f_path = utils.get_cache_file(request, url)
     with open(f_path, 'r') as f:
@@ -23,6 +24,7 @@ def resource_view(request):
 
 @view_config(route_name='merged', renderer='text')
 def merged_view(request):
+    utils.allowed_route(request, 'merged')
     url = utils.compose_url(request)
     f_path = utils.get_cache_file(request, url)
     return get_merged_buildout(f_path)
@@ -30,6 +32,7 @@ def merged_view(request):
 
 @view_config(route_name='merged_section', renderer='text')
 def merged_section_view(request):
+    utils.allowed_route(request, 'merged_section')
     url = utils.compose_url(request)
     section = request.matchdict.get('section')
     f_path = utils.get_cache_file(request, url)
