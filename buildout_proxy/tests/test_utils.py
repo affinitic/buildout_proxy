@@ -122,11 +122,11 @@ class TestUtils(unittest.TestCase):
 
     def test_update_url(self):
         self.assertEqual(
-            'http://localhost:6543/resource/http/affinitic.be/foo/bar.cfg',
+            'http://localhost:6543/r/http/affinitic.be/foo/bar.cfg',
             utils.update_url('http://affinitic.be/foo/bar.cfg'),
         )
         self.assertEqual(
-            'http://localhost:6543/resource/https/affinitic.be/foo/bar.cfg',
+            'http://localhost:6543/r/https/affinitic.be/foo/bar.cfg',
             utils.update_url('https://affinitic.be/foo/bar.cfg'),
         )
 

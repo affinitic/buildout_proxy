@@ -127,8 +127,8 @@ def get_base_url(request):
 def update_url(base_url, url):
     """ Update an url to use the buildout_proxy cache """
     replacements = (
-        ('http://', '{0}/resource/http/'.format(base_url)),
-        ('https://', '{0}/resource/https/'.format(base_url)),
+        ('http://', '{0}/r/http/'.format(base_url)),
+        ('https://', '{0}/r/https/'.format(base_url)),
     )
     for old, new in replacements:
         url = url.replace(old, new)
