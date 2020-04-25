@@ -131,7 +131,9 @@ def update_url(base_url, url):
         ('https://', '{0}/r/https/'.format(base_url)),
     )
     for old, new in replacements:
-        url = url.replace(old, new)
+        if url.startswith(old):
+            url = url.replace(old, new)
+            break
     return url
 
 
