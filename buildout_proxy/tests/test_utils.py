@@ -2,10 +2,10 @@
 import unittest
 import os
 import shutil
-import mock
 import requests
 
 from buildout_proxy import utils
+from unittest import mock
 
 
 class TestUtils(unittest.TestCase):
@@ -25,6 +25,10 @@ class TestUtils(unittest.TestCase):
     def _fake_request(self):
         """Return a fake request object"""
         return type('request', (object, ), {
+            'environ': {
+                'wsgi.url_scheme': 'https',
+                'HTTP_HOST': 'proxy.be',
+            },
             'matchdict': {
                 'domain': 'raw.github.com',
                 'protocol': 'https',
@@ -36,8 +40,15 @@ class TestUtils(unittest.TestCase):
                     'buildout_proxy.hosts.passwords': {
                         'affinitic.be': 'login:password',
                     },
+                    'buildout_proxy.cache': {'default': 300},
                 },
             })(),
+        })()
+
+    def _r_response(self, body, status_code=200):
+        return type('response', (object, ), {
+            'status_code': status_code,
+            'content': body.encode('utf8'),
         })()
 
     def test_compose_url_basic(self):
@@ -110,24 +121,32 @@ class TestUtils(unittest.TestCase):
         self.assertIsNone(f_path)
 
     def test_cache_file_with_extends(self):
-        requests.get = mock.Mock(return_value=type('response', (object, ), {
-            'status_code': 200,
-            'content': '[buildout]\nextends =\n1.cfg\n2.cfg'.encode('utf8'),
-        })())
+        requests.get = mock.Mock(side_effect=(
+            self._r_response('[buildout]\nextends =\n  1.cfg\n  2.cfg\n'),
+            self._r_response('[part1]\nvar = 1'),
+            self._r_response('[part2]\nvar = 2'),
+        ))
         f_path = utils.cache_file(
             self._fake_request,
             'http://foo.bar',
             os.path.join(self.test_path, 'foo'),
         )
+        with open(f_path, 'r') as f:
+            self.assertEqual((
+                '[buildout]\n'
+                'extends =\n'
+                '  https://proxy.be/r/http/foo.bar/1.cfg\n'
+                '  https://proxy.be/r/http/foo.bar/2.cfg\n'
+            ), f.read())
 
     def test_update_url(self):
         self.assertEqual(
-            'http://localhost:6543/r/http/affinitic.be/foo/bar.cfg',
-            utils.update_url('http://affinitic.be/foo/bar.cfg'),
+            'https://proxy.be/r/http/affinitic.be/foo/bar.cfg',
+            utils.update_url('https://proxy.be', 'http://affinitic.be/foo/bar.cfg'),
         )
         self.assertEqual(
-            'http://localhost:6543/r/https/affinitic.be/foo/bar.cfg',
-            utils.update_url('https://affinitic.be/foo/bar.cfg'),
+            'https://proxy.be/r/https/affinitic.be/foo/bar.cfg',
+            utils.update_url('https://proxy.be', 'https://affinitic.be/foo/bar.cfg'),
         )
 
     def test_smart_section_replacer(self):
